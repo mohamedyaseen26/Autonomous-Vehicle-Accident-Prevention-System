@@ -1,0 +1,141 @@
+# =============================
+#  SENSOR MODULES
+# =============================
+
+class Lidar:
+    def get_distance(self):
+        return 10.5  # simulated distance in meters
+
+
+class Radar:
+    def get_speed_of_object(self):
+        return 35.0  # simulated speed in km/h
+
+
+class Camera:
+    def detect_pedestrian(self):
+        return True  # simulated detection
+
+
+class Ultrasonic:
+    def proximity(self):
+        return 2.0  # simulated short-range detection
+
+
+# =============================
+#  DATA FUSION MODULE
+# =============================
+
+class DataFusion:
+    def __init__(self):
+        self.fused_distance = 0
+        self.object_speed = 0
+        self.pedestrian_detected = False
+        self.close_proximity = 0
+
+    def fuse(self, lidar_d, radar_s, camera_p, ultra_d):
+        self.fused_distance = (lidar_d + ultra_d) / 2.0
+        self.object_speed = radar_s
+        self.pedestrian_detected = camera_p
+        self.close_proximity = ultra_d
+
+
+# =============================
+#  MACHINE LEARNING MODULE
+#  (Simplified Predictive Logic)
+# =============================
+
+class MLModel:
+    def predict_risk(self, df):
+        risk = 0
+
+        if df.fused_distance < 5:
+            risk += 0.4
+        if df.object_speed > 30:
+            risk += 0.2
+        if df.pedestrian_detected:
+            risk += 0.3
+        if df.close_proximity < 3:
+            risk += 0.4
+
+        return min(risk, 1.0)
+
+
+# =============================
+#  DECISION-MAKING ENGINE
+# =============================
+
+class DecisionEngine:
+    def decide(self, risk):
+        if risk > 0.8:
+            return "EMERGENCY BRAKE"
+        elif risk > 0.6:
+            return "STEER AWAY"
+        elif risk > 0.3:
+            return "SLOW DOWN"
+        else:
+            return "NORMAL DRIVING"
+
+
+# =============================
+#  SAFETY CONTROLLER
+# =============================
+
+class SafetyController:
+    def execute(self, action):
+        if action == "EMERGENCY BRAKE":
+            print("⚠️ Emergency Brake Activated!")
+        elif action == "STEER AWAY":
+            print("⚠️ Evasive Steering Executed!")
+        elif action == "SLOW DOWN":
+            print("⚠️ Speed Reduced Automatically!")
+        else:
+            print("✔ Normal Driving Maintained.")
+
+
+# =============================
+#  MAIN SIMULATION
+# =============================
+
+def main():
+    # Create sensor objects
+    lidar = Lidar()
+    radar = Radar()
+    camera = Camera()
+    ultrasonic = Ultrasonic()
+
+    # Read values
+    lidar_d = lidar.get_distance()
+    radar_s = radar.get_speed_of_object()
+    cam_p = camera.detect_pedestrian()
+    ultra_d = ultrasonic.proximity()
+
+    print("Sensor Readings")
+    print("----------------------")
+    print("Lidar Distance:", lidar_d, "m")
+    print("Radar Speed:", radar_s, "km/h")
+    print("Pedestrian Detected:", "YES" if cam_p else "NO")
+    print("Ultrasonic Distance:", ultra_d, "m\n")
+
+    # Fuse data
+    df = DataFusion()
+    df.fuse(lidar_d, radar_s, cam_p, ultra_d)
+
+    # Predict risk
+    ml = MLModel()
+    risk_score = ml.predict_risk(df)
+    print("Predicted Risk Score:", risk_score)
+
+    # Make decision
+    de = DecisionEngine()
+    action = de.decide(risk_score)
+    print("Decision:", action)
+
+    # Safety response
+    sc = SafetyController()
+    sc.execute(action)
+
+
+# Run simulation
+if __name__ == "__main__":
+    main()
